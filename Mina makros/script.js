@@ -182,6 +182,7 @@ let cachedRouteData = null; // Cache for latest route data
 // Default API URL - fallback if no saved or input URL exists
 const DEFAULT_API_BASE =
   'https://dp.postnord.com/dp/routeinfo?costCenters=1117507&delta=false&blid=1049236&daysoffset=0';
+const PROXY_BASE_URL = 'http://localhost:3001';
 
 function resolveMonitorApiUrl() {
   const inputUrl = apiUrlInput.value.trim();
@@ -195,6 +196,16 @@ function resolveMonitorApiUrl() {
   }
 
   return DEFAULT_API_BASE;
+}
+
+function resolveProxyRouteUrl(apiUrl) {
+  if (apiUrl.startsWith(`${PROXY_BASE_URL}/routeinfo`)) {
+    return apiUrl;
+  }
+
+  const resolvedUrl = new URL(apiUrl, window.location.href);
+  const query = resolvedUrl.search || '';
+  return `${PROXY_BASE_URL}/routeinfo${query}`;
 }
 
 // Update login status on page load
@@ -245,14 +256,15 @@ async function fetchRouteData() {
     apiUrl = apiUrl + separator + 'delta=false';
   }
 
+  const proxyUrl = resolveProxyRouteUrl(apiUrl);
+
   try {
-    const response = await fetch(apiUrl, {
+    const response = await fetch(proxyUrl, {
       headers: {
         'accept': 'application/json, text/plain, */*',
-        'authorization': `Bearer ${authToken}`,
-        'content-type': 'application/json'
-      },
-      credentials: 'include'
+        'content-type': 'application/json',
+        'x-auth-token': authToken
+      }
     });
 
     if (!response.ok) {
@@ -823,6 +835,7 @@ renderButtons();
 async function fetchAndFormatStopsData() {
   const authToken = localStorage.getItem('authToken');
   const apiUrl = resolveMonitorApiUrl();
+  const proxyUrl = resolveProxyRouteUrl(apiUrl);
 
   if (!authToken) {
     alert('❌ Ingen auth token. Öppna DP-systemet i en annan flik först!');
@@ -830,13 +843,12 @@ async function fetchAndFormatStopsData() {
   }
 
   try {
-    const response = await fetch(apiUrl, {
+    const response = await fetch(proxyUrl, {
       headers: {
         'accept': 'application/json, text/plain, */*',
-        'authorization': `Bearer ${authToken}`,
-        'content-type': 'application/json'
-      },
-      credentials: 'include'
+        'content-type': 'application/json',
+        'x-auth-token': authToken
+      }
     });
 
     if (!response.ok) {
