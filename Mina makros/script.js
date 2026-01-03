@@ -179,8 +179,23 @@ let monitorInterval = null;
 let previousRouteStates = {};
 let cachedRouteData = null; // Cache for latest route data
 
-// Default API URL - will be auto-detected from DP system
-const DEFAULT_API_BASE = 'https://dp.postnord.com/dp/routeinfo';
+// Default API URL - fallback if no saved or input URL exists
+const DEFAULT_API_BASE =
+  'https://dp.postnord.com/dp/routeinfo?costCenters=1117507&delta=false&blid=1049236&daysoffset=0';
+
+function resolveMonitorApiUrl() {
+  const inputUrl = apiUrlInput.value.trim();
+  if (inputUrl) {
+    return inputUrl;
+  }
+
+  const savedUrl = localStorage.getItem('monitor_api_url') || '';
+  if (savedUrl) {
+    return savedUrl;
+  }
+
+  return DEFAULT_API_BASE;
+}
 
 // Update login status on page load
 updateLoginStatus();
@@ -219,18 +234,8 @@ async function fetchRouteData() {
     return;
   }
 
-  // Get API URL or use saved one
-  let apiUrl = apiUrlInput.value.trim();
-
-  // If no URL provided, try to auto-detect from saved URL or use default
-  if (!apiUrl) {
-    apiUrl = localStorage.getItem('monitor_api_url') || '';
-  }
-
-  if (!apiUrl) {
-    addChatMessage('⚠️ Ingen API URL angiven. Klistra in URL från DP-systemets Network tab.', 'error');
-    return;
-  }
+  // Get API URL or use saved one / fallback
+  let apiUrl = resolveMonitorApiUrl();
 
   // Ensure delta=false to get full data
   if (apiUrl.includes('delta=true')) {
@@ -357,12 +362,7 @@ startMonitorBtn.onclick = () => {
     addChatMessage('⏸️ Monitor stoppad', 'system');
   } else {
     // Start monitoring
-    const apiUrl = apiUrlInput.value.trim();
-
-    if (!apiUrl) {
-      addChatMessage('⚠️ Klistra in API URL från DP-systemets Network tab först', 'error');
-      return;
-    }
+    const apiUrl = resolveMonitorApiUrl();
 
     // Check if authToken exists
     const authToken = localStorage.getItem('authToken');
@@ -822,9 +822,7 @@ renderButtons();
 // API V2 Button Handler - Fetch data directly from API
 async function fetchAndFormatStopsData() {
   const authToken = localStorage.getItem('authToken');
-  const apiUrl =
-    localStorage.getItem('monitor_api_url') ||
-    'https://dp.postnord.com/dp/routeinfo?costCenters=1117507&delta=false&blid=1049236&daysoffset=0';
+  const apiUrl = resolveMonitorApiUrl();
 
   if (!authToken) {
     alert('❌ Ingen auth token. Öppna DP-systemet i en annan flik först!');
