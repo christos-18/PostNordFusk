@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <title>PostNord Fusk</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="/bilder/ikon.png" type="image/png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="overlay">
+    <!-- Settings & Monitor -->
+    <button class="settings-btn" id="settingsBtn">⚙️</button>
+    <button class="monitor-btn" id="monitorBtn">📊</button>
+
+    <!-- User badge -->
+    <div class="user-badge" id="userBadge" style="display:none;">
+      <span class="user-icon">👤</span>
+      <span class="user-name" id="userNameDisplay"></span>
+      <button class="badge-logout-btn" id="badgeLogoutBtn">Logga ut</button>
+    </div>
+
+    <!-- 🔑 ENDA platsen där knappar ska renderas -->
+    <div class="container" id="buttonContainer">
+      <!-- Buttons rendered by script.js -->
+    </div>
+  </div>
+
+  <!-- Editor Modal -->
+  <div class="modal" id="editorModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Redigera Scripts</h2>
+        <button class="close-btn" id="closeModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="script-list">
+          <button class="add-script-btn" id="addScriptBtn">➕ Lägg till nytt script</button>
+          <div class="script-items" id="scriptList"></div>
+        </div>
+        <div class="editor-container">
+          <div class="editor-toolbar">
+            <button class="save-btn" id="saveBtn">💾 Spara</button>
+            <button class="reset-btn" id="resetBtn">↺ Återställ</button>
+          </div>
+          <textarea id="codeEditor" spellcheck="false"></textarea>
+          <div class="status-message" id="statusMessage"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input Dialog -->
+  <div class="input-dialog" id="inputDialog">
+    <div class="input-dialog-content">
+      <h3>Lägg till nytt script</h3>
+      <input type="text" id="scriptNameInput" placeholder="Namn på scriptet...">
+      <input type="text" id="scriptEmojiInput" placeholder="Emoji (t.ex. 🎯)" maxlength="2">
+      <div class="input-dialog-buttons">
+        <button class="cancel-btn" id="dialogCancel">Avbryt</button>
+        <button class="confirm-btn" id="dialogConfirm">Skapa</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm Dialog -->
+  <div class="confirm-dialog" id="confirmDialog">
+    <div class="confirm-dialog-content">
+      <h3>Ta bort script?</h3>
+      <p id="confirmMessage"></p>
+      <div class="confirm-dialog-buttons">
+        <button class="cancel-btn" id="confirmCancel">Avbryt</button>
+        <button class="delete-confirm-btn" id="confirmDelete">Ta bort</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live Monitor Panel -->
+  <div class="monitor-panel" id="monitorPanel">
+    <div class="monitor-header">
+      <h3>📊 Live Chaufför Monitor</h3>
+      <div class="monitor-controls">
+        <span class="monitor-status" id="monitorStatus">●</span>
+        <button class="monitor-close" id="monitorClose">✕</button>
+      </div>
+    </div>
+    <div class="monitor-config">
+      <input type="text" id="apiUrl" placeholder="API URL (lämna tom för auto-detect)">
+      <small>✅ Token hämtas automatiskt från DP-systemet</small>
+      <button class="start-monitor-btn" id="startMonitor">🚀 Starta Monitor</button>
+    </div>
+    <div class="monitor-chat" id="monitorChat">
+      <div class="chat-message system">Konfigurera och starta monitorn ovan...</div>
+    </div>
+  </div>
+
+  <!-- Login Dialog -->
+  <div class="login-dialog" id="loginDialog">
+    <div class="login-dialog-content">
+      <h2>🔐 Logga in</h2>
+      <p>Logga in för att redigera scripts</p>
+      <input type="text" id="loginUsername" placeholder="Användarnamn">
+      <input type="password" id="loginPassword" placeholder="Lösenord">
+      <div class="login-error" id="loginError"></div>
+      <div class="login-dialog-buttons">
+        <button class="cancel-btn" id="loginCancel">Avbryt</button>
+        <button class="confirm-btn" id="loginConfirm">Logga in</button>
+      </div>
+      <div class="login-footer">
+        <small>Inloggad som: <span id="currentUser">Ingen</span></small>
+        <button class="logout-btn" id="logoutBtn" style="display:none;">Logga ut</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="script.js"></script>
+</body>
+</html>
